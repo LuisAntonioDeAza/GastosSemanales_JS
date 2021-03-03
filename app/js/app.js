@@ -111,3 +111,12 @@ function validarCampos(e) {
     
     formulario.reset();
 }
+
+function ReiniciarCampos(){
+
+    const gasto = document.querySelector("#gasto").value;
+    const cantidad = Number(document.querySelector("#cantidad").value);
+
+    gasto == '';
+    cantidad == 0;
+}
