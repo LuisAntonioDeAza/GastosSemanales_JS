@@ -35,8 +35,14 @@ class Presupuesto {
     }
 
     restate() {
-            const gastado = this.Gastos.reduce( (total, gastos) => total + gastos.cantidad, 0);
-            this.Restante = this.Presupuesto - gastado;
+        const gastado = this.Gastos.reduce((total, gastos) => total + gastos.cantidad, 0);
+        this.Restante = this.Presupuesto - gastado;
+    }
+
+    eliminarGastos(id) {
+        this.Gastos = this.Gastos.filter(gastos => gastos.id !== id);
+        ui.listaGasto(this.Gastos);
+        this.restate();
     }
 }
 
@@ -60,21 +66,30 @@ class UI {
     }
 
     listaGasto(valor) {
-        
+
         //Limpiar el html para que los elementos DOM agregados no se repitan
         while (listadoGasto.lastChild) {
             listadoGasto.lastChild.remove();
         }
 
-            valor.forEach((gastos) => {
+        valor.forEach((gastos) => {
             const { gasto, cantidad, id } = gastos;
             const li = document.createElement("li");
+
             li.className = "list-group-item d-flex justify-content-between aling-items-center";
             li.dataset.id = id;
             li.innerHTML = `${gasto} <span class="badge badge-primary">${cantidad}</span>`;
+
             const btns = document.createElement("button");
             btns.classList.add("btn", "btn-danger", "borrar-gastos");
             btns.innerHTML = "borrar &times;";
+            btns.onclick = () => {
+                if (colPrimaria.children[1].classList.contains("alert")) {
+                    colPrimaria.children[1].remove();
+                }
+                eliminarGasto(id);
+            }
+
             li.appendChild(btns);
             listadoGasto.appendChild(li);
         });
@@ -84,23 +99,30 @@ class UI {
         const restant = (document.querySelector("#restante").textContent = restan);
     }
 
-    comprobarPresupuesot(presupuestoOBJ){
-
-        const {Presupuesto, Restante } =presupuestoOBJ;
+    comprobarPresupuesto(presupuestoOBJ) {
         const restantediv = document.querySelector('.restante');
-        if((Presupuesto / 4) > Restante){
+        restantediv.classList.remove('alert-success', 'alert-warning', 'alert-danger');
+        const { Presupuesto, Restante } = presupuestoOBJ;
+
+        if ((Presupuesto / 4) > Restante) {
             restantediv.classList.remove('alert-success');
             restantediv.classList.add('alert-danger');
-            
-        }else if((Presupuesto /2 ) > 2){
+
+        } else if ((Presupuesto / 2) > Restante) {
             restantediv.classList.remove('alert-success');
             restantediv.classList.add('alert-warning');
+
+        } else if (Restante > 0) {
+            formulario.querySelector('button[type="submit"]').disabled = false;
+            restantediv.classList.add('alert-success');
+
+        }
+        if (Restante <= 0) {
+            this.imprimirError("Se agoto el presupuesto", "alert-danger");
+            formulario.querySelector('button[type="submit"]').disabled = true;
+
         }
 
-        if(Restante <= 0){
-            ui.imprimirError("Se agoto el presupuesto", "alert-danger");
-            formulario.querySelector('button[type="submit"]').disabled = true;
-        }
     }
 }
 
@@ -127,16 +149,14 @@ function validarCampos(e) {
     const { Gastos, Restante } = presupuest;
     ui.listaGasto(Gastos);
     ui.altualizarRestante(Restante);
-    ui.comprobarPresupuesot(presupuest);
-    
+    ui.comprobarPresupuesto(presupuest);
+
     formulario.reset();
 }
 
-function ReiniciarCampos(){
-
-    const gasto = document.querySelector("#gasto").value;
-    const cantidad = Number(document.querySelector("#cantidad").value);
-
-    gasto == '';
-    cantidad == 0;
+function eliminarGasto(id) {
+    presupuest.eliminarGastos(id);
+    const { Gastos, Restante } = presupuest;
+    ui.altualizarRestante(Restante);
+    ui.comprobarPresupuesot(presupuest);
 }
