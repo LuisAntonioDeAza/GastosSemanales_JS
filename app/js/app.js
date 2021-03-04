@@ -83,6 +83,25 @@ class UI {
     altualizarRestante(restan) {
         const restant = (document.querySelector("#restante").textContent = restan);
     }
+
+    comprobarPresupuesot(presupuestoOBJ){
+
+        const {Presupuesto, Restante } =presupuestoOBJ;
+        const restantediv = document.querySelector('.restante');
+        if((Presupuesto / 4) > Restante){
+            restantediv.classList.remove('alert-success');
+            restantediv.classList.add('alert-danger');
+            
+        }else if((Presupuesto /2 ) > 2){
+            restantediv.classList.remove('alert-success');
+            restantediv.classList.add('alert-warning');
+        }
+
+        if(Restante <= 0){
+            ui.imprimirError("Se agoto el presupuesto", "alert-danger");
+            formulario.querySelector('button[type="submit"]').disabled = true;
+        }
+    }
 }
 
 ui = new UI();
@@ -108,6 +127,7 @@ function validarCampos(e) {
     const { Gastos, Restante } = presupuest;
     ui.listaGasto(Gastos);
     ui.altualizarRestante(Restante);
+    ui.comprobarPresupuesot(presupuest);
     
     formulario.reset();
 }
