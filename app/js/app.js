@@ -6,6 +6,7 @@ let presupuest;
 let ui;
 
 EventListener();
+
 function EventListener() {
     document.addEventListener("DOMContentLoaded", () => {
         const preguntaPresupuesto = prompt("Cual es tu presupuesto?");
@@ -155,8 +156,9 @@ function validarCampos(e) {
 }
 
 function eliminarGasto(id) {
+    console.log('llegue al ultimo metodo')
     presupuest.eliminarGastos(id);
     const { Gastos, Restante } = presupuest;
     ui.altualizarRestante(Restante);
-    ui.comprobarPresupuesot(presupuest);
+    ui.comprobarPresupuesto(presupuest);
 }
